@@ -3,7 +3,6 @@
 This module implements the following graphs searching algorithms:
     Depth-First Search (DFS)
     Breadth-First Search (BFS)
-    ...
 
 @Author: Gabriel Nogueira (Talendar).
 """
@@ -15,8 +14,10 @@ from time import time
 class Search(ABC):
     """ Defines the searching algorithms API.
 
-    This abstract class acts defines the general structure and operations of a graph searching algorithm. It should be
-    inherited by the classes representing those algorithms.
+    This abstract class defines the general structure and operations of a graph searching algorithm. It should be
+    inherited by the classes representing those algorithms. Graph search algorithms explore a graph either for general
+    discovery or explicit search. These algorithms carve paths through the graph, but there is no expectation that those
+    paths are computationally optimal.
 
     Attributes:
         _graph: The graph on which the search will be performed.
@@ -29,11 +30,17 @@ class Search(ABC):
     """
 
     def __init__(self, graph, source_vertex: int):
-        """ Inits a Search instance. The searching algorithm is executed in this step. """
+        """ Inits a Search instance.
+
+        The searching algorithm is executed in this step.
+
+        :param graph: Graph on which the search will be performed.
+        :param source_vertex: Index of the starting vertex of the search.
+        """
         self._graph = graph
         self._source_vertex = source_vertex
         self._marked = [False for _ in range(graph.num_vertices())]
-        self._edge_to = [0 for _ in range(graph.num_vertices())]
+        self._edge_to = [-1 for _ in range(graph.num_vertices())]
 
         start_time = time()
         self._search(self._source_vertex)
@@ -68,7 +75,7 @@ class Search(ABC):
         """ Tries to find a path connecting v to the source vertex.
 
         :param v: The index of the vertex to which the path will be sought.
-        :return: A list containing the indices of the vertices that forms the path from the source vertex to v. If no
+        :return: A tuple containing the indices of the vertices that forms the path from the source vertex to v. If no
         such path exists, returns None.
         """
         if not self.connected_to(v):
@@ -80,14 +87,23 @@ class Search(ABC):
             path.insert(0, w)
             w = self._edge_to[w]
 
-        return path
+        return tuple(path)
 
 
 class DFS(Search):
-    """ Implementation of the Depth-First Search algorithm. Subclass of the Search class. """
+    """ Implementation of the Depth-First Search algorithm.
+
+    Subclass of the Search class. It's meant to explore all the vertices connected to the source, so it's not optimal
+    for pathfinding purposes.
+    """
 
     def _search(self, s: int):
-        """ DFS algorithm. """
+        """ Depth-First Search algorithm.
+
+        Explores all the vertices connected to the source vertex. For each visited vertex, the edge that lead there is
+        remembered, so that it's possible to determine the path used by the algorithm from the source to that vertex.
+        That path is NOT guaranteed to be the shortest one.
+        """
         self._marked[s] = True
         for v in self._graph.adj(s):
             if not self._marked[v]:
@@ -96,10 +112,19 @@ class DFS(Search):
 
 
 class BFS(Search):
-    """ Implementation of the Breadth-First Search algorithm. Subclass of the Search class. """
+    """ Implementation of the Breadth-First Search algorithm.
+
+    Subclass of the Search class. It's meant to explore all the vertices connected to the source, so it's not optimal
+    for pathfinding purposes.
+    """
 
     def _search(self, s: int):
-        """ BFS algorithm """
+        """ BFS algorithm
+
+        Explores all the vertices connected to the source vertex. For each visited vertex, the edge that lead there is
+        remembered, so that it's possible to determine the path used by the algorithm from the source to that vertex. In
+        the case of BFS, that path is guaranteed to be the shortest one.
+        """
         queue = [s]
         self._marked[s] = True
 

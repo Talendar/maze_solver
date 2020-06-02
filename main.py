@@ -7,15 +7,17 @@ This program implements a maze solver agent that uses different search algorithm
 
 from graphs.undirected_graph import Graph, read_graph
 from graphs.search import DFS, BFS
-from maze import Maze, solved_maze, maze_img
+from maze import *
 
 
 if __name__ == "__main__":
-    maze = Maze("./data/maze1.txt")
+    #maze = maze_from_file("./data/maze1.txt")
+    maze = random_maze(128, 128)
     path = maze.find_path()
 
-    solved = solved_maze(maze._maze_ascii, path)
+    solved = maze_insert_path(maze.ascii_matrix, path)
     maze_img(solved).show()
+
 
     """graph = read_graph()
     print(graph)
