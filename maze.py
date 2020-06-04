@@ -77,16 +77,13 @@ class Maze:
 
     def exit_found(self, algorithm):
         """ Returns True if the algorithm could find the maze's exit and False otherwise. """
-        return self._pathfinders[algorithm].path() is not None
+        path = self._pathfinders[algorithm].path()
+        return False if path is None else (self._graph.indexof(str(self._exit)) in path)
 
     def path_len(self, algorithm):
         """ Returns the length of the path found by the given algorithm. """
         path = self._pathfinders[algorithm].path()
-
-        if path is None:
-            print(self._pathfinders[algorithm].marked_list())
-
-        return len(path) if path is not None else len(self._pathfinders[algorithm].marked_list())
+        return len(path) if path is not None else 0
 
     def solution_time(self, algorithm):
         """ Returns the time spent by the given pathfinding algorithm to find a solution.
