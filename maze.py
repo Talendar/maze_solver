@@ -12,6 +12,7 @@ import numpy as np
 import PIL
 from PIL import Image
 from random import randint
+from math import sqrt
 
 
 class Maze:
@@ -25,10 +26,15 @@ class Maze:
         _ascii_matrix: Matrix containing the ASCII representation of the maze.
         _start: Coordinates of the starting position.
         _exit: Coordinates of the exit.
+        _pathfinders: Dictionary mapping the name of the pathfinding algorithms to the corresponding instances of
+        Pathfind.
     """
 
     def __init__(self, ascii_matrix, start, exit):
-        """ Inits the maze from a matrix containing an ASCII representation of the maze.
+        """ Inits the maze from a matrix containing an ASCII representation of the maze and solve it.
+
+        The following pathfinding algorithms will be executed at this step: "DFS", "BFS", "Best-First Search", "A*" and
+        "Hill Climbing".
 
         :param ascii_matrix: Matrix containing an ASCII representation of the maze. Each element of the matrix represents
         a tile on the maze. "#" is the starting point, "$" the exit, "*" a walkable tile and "-" a wall.
@@ -38,18 +44,67 @@ class Maze:
         self._ascii_matrix = ascii_matrix
         self._start, self._exit = start, exit
         self._graph = ascii2graph(self._ascii_matrix)
+        self._pathfinders = {
+            "DFS": DFSPath(self._graph, self._graph.indexof(str(self._start)), self._graph.indexof(str(self._exit))),
+            "BFS": BFSPath(self._graph, self._graph.indexof(str(self._start)), self._graph.indexof(str(self._exit))),
+            "BestFirstSearch": BestFirstSearch(self._graph, self._graph.indexof(str(self._start)),
+                                               self._graph.indexof(str(self._exit)), euclid_dist),
+            "A*": AStar(self._graph, self._graph.indexof(str(self._start)), self._graph.indexof(str(self._exit)),
+                        euclid_dist, lambda graph, v, w, dist: dist),
+            "HillClimbing": HillClimbing(self._graph, self._graph.indexof(str(self._start)),
+                                         self._graph.indexof(str(self._exit)), euclid_dist)
+        }
 
     @property
     def ascii_matrix(self):
         """ Returns the ASCII matrix that represents the maze. """
         return self._ascii_matrix
 
-    def find_path(self):
-        """ Test. """
-        dfs = DFSPath(self._graph, self._graph.indexof(str(self._start)), self._graph.indexof(str(self._exit)))
-        # converting path from list of strings to list of int tuples
-        return [tuple( map( int, self._graph.nameof(v).replace("(", "").replace(")", "").split(", ") ) )
-                for v in dfs.path()]
+    @property
+    def pathfinders(self):
+        """ Returns a list containing the names of all the pathfinding algorithms used to solve the maze. """
+        return self._pathfinders.keys()
+
+    def solved_ascii(self, algorithm):
+        """ Returns the ASCII matrix that represents the maze filled with the path found by the given algorithm.
+
+        :param algorithm: String containing the name of the pathfinding algorithm.
+        :return: An ASCII matrix representing the solved maze.
+        """
+        path_raw = self._pathfinders[algorithm].path()
+        path = path_raw if path_raw is not None else self._pathfinders[algorithm].marked_list()
+        return maze_insert_path(self._ascii_matrix, [index2coords(self._graph, v) for v in path] )
+
+    def exit_found(self, algorithm):
+        """ Returns True if the algorithm could find the maze's exit and False otherwise. """
+        return self._pathfinders[algorithm].path() is not None
+
+    def path_len(self, algorithm):
+        """ Returns the length of the path found by the given algorithm. """
+        path = self._pathfinders[algorithm].path()
+
+        if path is None:
+            print(self._pathfinders[algorithm].marked_list())
+
+        return len(path) if path is not None else len(self._pathfinders[algorithm].marked_list())
+
+    def solution_time(self, algorithm):
+        """ Returns the time spent by the given pathfinding algorithm to find a solution.
+
+        :param algorithm: String containing the name of the pathfinding algorithm.
+        :return: Time, in seconds, spent by the algorithm to find a solution.
+        """
+        return self._pathfinders[algorithm].pathfind_time
+
+
+def index2coords(graph, v):
+    """ Returns the coordinates of the given vertex in the graph.
+
+    :param graph: A graph in which a vertex's name is its coordinates in the 2D space in a tuple.
+    :param v: The index of the vertex.
+    :return: A tuple containing the coordinates of the vertex.
+    """
+    return tuple( map( int, graph.nameof(v).replace("(", "").replace(")", "").split(", ")) )
 
 
 def ascii2graph(maze_ascii):
@@ -90,16 +145,18 @@ def maze_insert_path(maze_ascii, path):
     :return: A matrix with the new ASCII representation of the maze.
     """
     solved = [row.copy() for row in maze_ascii]  # copying the maze character matrix
-    for v in path[0:-1]:
-        solved[v[0]][v[1]] = "@"
+    for v in path:
+        if solved[v[0]][v[1]] == "*":
+            solved[v[0]][v[1]] = "@"
 
     return solved
 
 
-def maze_img(maze_ascii):
+def maze_img(maze_ascii, img_height):
     """ Generates an image representing the maze.
 
     :param maze_ascii: A matrix with the ASCII representation of the maze.
+    :param img_height: The height of the image. The width will be adjusted to keep proportions.
     :return: An instance of PIL.Image containing the generated image.
     """
     imgs_names = ["walkable.png", "wall.png", "start.png", "exit.png", "path.png"]
@@ -112,7 +169,10 @@ def maze_img(maze_ascii):
         for c in row:
             comb[-1].append(char2img[c])
         comb[-1] = np.hstack(comb[-1])
-    return PIL.Image.fromarray(np.vstack(comb))
+
+    img = PIL.Image.fromarray(np.vstack(comb))
+    w = int((img_height/img.size[1]) * img.size[0])
+    return img.resize((w, img_height))
 
 
 def _get_neighbours(maze, c):
@@ -148,10 +208,11 @@ def _get_neighbours(maze, c):
     return explored, unexplored
 
 
-def random_maze(rows, cols):
+def random_maze(rows, cols, noise=0):
     """ Generate a random maze with the given dimensions.
 
-    This function uses an adapted version of the Prim's Algorithm. It executes the following steps:
+    This function uses an adapted version of the Prim's Algorithm to generate a maze with the given dimensions. The
+    algorithm executes the following steps:
         > Start with a grid of filled cells.
         > Pick a cell, mark it as part of the maze. Add the surrounding filled cells of the cell to the cell list.
         > While there are cells in the list:
@@ -162,6 +223,9 @@ def random_maze(rows, cols):
 
     :param rows: Number of rows of the maze (height).
     :param cols: Number of columns of the maze (width).
+    :param noise: Percentage of wall cells that will be converted to walkable cells when the algorithm finishes its
+    execution. Prim's algorithm creates a tree (acyclic). Adding noise helps introducing cycles in the maze. A float in
+    the interval [0, 1] is expected.
     :return: An instance of Maze representing the generated maze.
     """
     maze = [["-" for _ in range(cols)] for _ in range(rows)]  # starting the maze with walls only
@@ -208,7 +272,21 @@ def random_maze(rows, cols):
             j = randint(0, cols - 1)
 
     maze[i][j] = "$"  # marking the cell as the exit point
-    return Maze(maze, s, (i, j))
+    e = (i, j)
+
+    # adding noise (introduces cycles in the maze)
+    if noise > 0:
+        walls = []
+        for i in range(len(maze)):
+            for j, c in enumerate(maze[i]):
+                if c == "-":
+                    walls.append((i, j))
+
+        for i in range(int(len(walls) * noise)):
+            c = walls.pop(randint(0, len(walls) - 1))
+            maze[c[0]][c[1]] = "*"
+
+    return Maze(maze, s, e)
 
 
 def maze_from_file(input_file):
@@ -287,3 +365,32 @@ def maze_from_file(input_file):
         raise RuntimeError("No exit point was found!")
 
     return Maze(maze_ascii, start, exit)
+
+
+def euclid_dist(graph, v, w, dist_parent=None):
+    """ Returns the euclidean distance between two vertices of a graph. Can be used as a heuristic function.
+
+    :param graph: A graph in which a vertex's name is its coordinates in the 2D space.
+    :param v: Index of the first vertex.
+    :param w: Index of the second vertex.
+    :param dist_parent: This parameter is ignored by this function and is here just to make the use of the function
+    possible in some situations.
+    :return: A float representing the euclidean distance between node 1 and 2.
+    """
+    v, w = index2coords(graph, v), index2coords(graph, w)
+    return sqrt( (v[0] - w[0])**2 + (v[1] - w[1])**2 )
+
+
+def manhattan_dist(graph, v, w, dist_parent=None):
+    """ Returns the Manhattan distance between two vertices of a graph.
+
+    :param graph: A graph in which a vertex's name is its coordinates in the 2D space.
+    :param v: Index of the first vertex.
+    :param w: Index of the second vertex.
+    :param dist_parent: This parameter is ignored by this function and is here just to make the use of the function
+    possible in some situations.
+    :return: An integer representing the Manhattan distance between node 1 and 2.
+    """
+    v, w = index2coords(graph, v), index2coords(graph, w)
+    return abs(v[0] - w[0]) + abs(v[1] - w[1])
+
