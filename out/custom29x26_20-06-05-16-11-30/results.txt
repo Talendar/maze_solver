@@ -1,0 +1,31 @@
+2020-06-05 16:11:30.881251
+
+
+> DFS:
+   . Execution time: 0.146827ms
+   . Exit found: True
+   . Path length: 58
+
+
+> BFS:
+   . Execution time: 0.509368ms
+   . Exit found: True
+   . Path length: 48
+
+
+> BestFirstSearch:
+   . Execution time: 0.744496ms
+   . Exit found: True
+   . Path length: 54
+
+
+> A*:
+   . Execution time: 2.434196ms
+   . Exit found: True
+   . Path length: 48
+
+
+> HillClimbing:
+   . Execution time: 0.363185ms
+   . Exit found: False
+   . Path length: 46

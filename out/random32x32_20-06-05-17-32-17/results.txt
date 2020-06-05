@@ -1,0 +1,31 @@
+2020-06-05 17:32:20.326446
+
+
+> DFS:
+   . Average execution time: 0.308983ms
+   . Exit found: 5/5
+   . Average path length: 129
+
+
+> BFS:
+   . Average execution time: 0.528733ms
+   . Exit found: 5/5
+   . Average path length: 49
+
+
+> BestFirstSearch:
+   . Average execution time: 0.738442ms
+   . Exit found: 5/5
+   . Average path length: 50
+
+
+> A*:
+   . Average execution time: 2.286622ms
+   . Exit found: 5/5
+   . Average path length: 49
+
+
+> HillClimbing:
+   . Average execution time: 0.084392ms
+   . Exit found: 0/5
+   . Average path length: 9

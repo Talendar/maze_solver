@@ -87,6 +87,9 @@ def opt1():
 
         # saving results and imgs
         print("[%d/%d] Generating images and saving results..." % (i+1, num_exe), end="")
+        if save_imgs:
+            maze_img(maze.ascii_matrix, OUT_IMG_HEIGHT).save(out_dir + "/%d_maze.png" % (i + 1))
+
         for p in maze.pathfinders:
             add_results(results, p + "_exit_found", int(maze.exit_found(p)))   # number of times that the exit was found
             add_results(results, p + "_path_len", maze.path_len(p))            # sum of the lengths of the found paths
