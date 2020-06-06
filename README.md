@@ -11,8 +11,8 @@ This program, written in Python as part of the course [SCC0530 - Artificial Inte
 The mazes are modeled with undirected unweighted graphs. The ADT was implemented for general use, so its use is not restricted to this program. The mazes can either be provided in a file as an input from the user (check the documentations for more information) or be randomly generated, in which case a variation of the [Prim's algorithm](https://en.wikipedia.org/wiki/Prim%27s_algorithm) is used. A module to generate images representing the mazes is also included. Some of the images for the randomly generated mazes can be seen below. The results, as well as more information regarding the used methodology, can be found at the report (PDF) in this repository (it's written in portuguese).
 
 <p align="center"> 
-    <img src="./out/random32x32_20-06-05-17-32-17/5_DFS.png" width="300" height="300"> <br>  
-    <img src="./out/random32x32_20-06-05-17-32-17/5_BFS.png" width="30%"> <br>  
-    <img src="./out/random32x32_20-06-05-17-32-17/5_BestFirstSearch.png" width="30%"> <br>  
-    <img src="./out/random32x32_20-06-05-17-32-17/5_A*.png" width="30%">
+    <img src="./out/random32x32_20-06-05-17-32-17/5_DFS.png" width="400" height="400"> <br>  
+    <img src="./out/random32x32_20-06-05-17-32-17/5_BFS.png"width="400" height="400"> <br>  
+    <img src="./out/random32x32_20-06-05-17-32-17/5_BestFirstSearch.png" width="400" height="400"> <br>  
+    <img src="./out/random32x32_20-06-05-17-32-17/5_A*.png" width="400" height="400">
 </p>
