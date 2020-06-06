@@ -15,8 +15,10 @@ To run this program, make sure you have Python 3 installed. Then, run the follow
   - pip install numpy
   - pip install pillow
  
-Once the dependencies are installed, you can run the program by executing, in your terminal: python3 main.py
+Once the dependencies are installed, you can run the program by executing the following in a command shell: 
+   - python3 main.py
 
+</br>
 <h3 align="center"><b>Depth-First Search<b></h3>
 <p align="center"> <img src="./out/random32x32_20-06-05-17-32-17/5_DFS.png" width="400" height="400"> </p> 
 </br>
