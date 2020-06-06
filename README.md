@@ -1,5 +1,6 @@
 # Maze Solver
 
+<p align="justify">
 This program, written in Python as part of the course [SCC0530 - Artificial Intelligence](https://uspdigital.usp.br/jupiterweb/obterDisciplina?nomdis=&sgldis=SCC0530), implements different graph search algorithms and analyzes them in the context of maze solving. They are the following:
 
   - Depth-First Search (DFS);
@@ -17,6 +18,7 @@ To run this program, make sure you have Python 3 installed. Then, run the follow
  
 Once the dependencies are installed, you can run the program by executing the following in a command shell: 
    - python3 main.py
+</p>
 
 </br>
 <h3 align="center"><b>Depth-First Search<b></h3>
