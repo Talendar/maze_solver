@@ -13,12 +13,17 @@ The mazes are modeled with undirected unweighted graphs. The ADT was implemented
 
 <h3 align="center"><b>Depth-First Search<b></h3>
 <p align="center"> <img src="./out/random32x32_20-06-05-17-32-17/5_DFS.png" width="400" height="400"> </p> 
-</br> </br>
+</br>
 
 <h3 align="center"><b>Breadth-First Search<b></h3>
 <p align="center"> <img src="./out/random32x32_20-06-05-17-32-17/5_BFS.png"width="400" height="400"> </p> 
 </br>
-  
+
+<h3 align="center"><b>Best-First Search<b></h3>
 <p align="center"> <img src="./out/random32x32_20-06-05-17-32-17/5_BestFirstSearch.png" width="400" height="400"> </p> 
+</br>  
+  
+<h3 align="center"><b>A*<b></h3>
 <p align="center"> <img src="./out/random32x32_20-06-05-17-32-17/5_A*.png" width="400" height="400"> </p>
+</br>
 
