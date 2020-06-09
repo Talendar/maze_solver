@@ -35,7 +35,7 @@ Once the dependencies are installed, you can run the program by executing the fo
 <p align="center"> <img src="./out/random32x32_20-06-05-17-32-17/5_A*.png" width="400" height="400"> </p>
 </br>
   
-<h3 align="center"><b>A*<b></h3>
-<p align="center"> <img src="./out/random32x32_20-06-05-17-32-17/5_hill_climbing.png" width="400" height="400"> </p>
+<h3 align="center"><b>Hill Climbing<b></h3>
+<p align="center"> <img src="./out/random32x32_20-06-05-17-32-17/5_HillClimbing.png" width="400" height="400"> </p>
 </br>
 
